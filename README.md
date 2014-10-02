@@ -3,6 +3,7 @@ nlp-project
 
 for NLP course
 
+# how to run
 
 1. npm install
 2. npm start
