@@ -26,7 +26,7 @@ Some useful Information Retrieval (IR) algorithms including string to
 vector functions and similarity queries such as TF-IDF. Also implements
 topic modelling such as Latent Semantic Analysis.
 
-For successfully installing gensim, you need Fortran compiler. Run the following command to install it.
+For successfully installing gensim, you need Fortran compiler. Run the following command to install it. (It might take you a while...)
 
 `brew install gfortran`
 
