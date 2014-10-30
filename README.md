@@ -41,4 +41,4 @@ Python web framework
 References
 ------------------
 
-* causeofwhy <https://github.com/bwbaugh/causeofwhy>
+* [causeofwhy](https://github.com/bwbaugh/causeofwhy)
