@@ -56,5 +56,5 @@ Troubleshooting
 
 * [numpy and scipy need fortran compiler](http://stackoverflow.com/questions/11442970/numpy-and-scipy-for-preinstalled-python-2-6-7-on-mac-os-lion)
 
-
+* [Installing GCC on OS X Yosemite via Homebrew - make[1]: [stage2-bubble] Error 2 make: [bootstrap] Error 2](http://bordoni.me/environment/gcc-os-x-yosemite-via-homebrew/)
 
