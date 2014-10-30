@@ -3,7 +3,6 @@ nlp-project
 
 for NLP course
 
-
 Required Libraries
 ------------------
 
@@ -26,6 +25,9 @@ nltk.download() after you have the nltk library installed.
 Some useful Information Retrieval (IR) algorithms including string to
 vector functions and similarity queries such as TF-IDF. Also implements
 topic modelling such as Latent Semantic Analysis.
+
+For successfully installing gensim, you need Fortran compiler. Run the following command to install it.
+`brew install gfortran`
 
 * <http://radimrehurek.com/gensim/install.html>
 
