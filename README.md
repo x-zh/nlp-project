@@ -27,6 +27,7 @@ vector functions and similarity queries such as TF-IDF. Also implements
 topic modelling such as Latent Semantic Analysis.
 
 For successfully installing gensim, you need Fortran compiler. Run the following command to install it.
+
 `brew install gfortran`
 
 * <http://radimrehurek.com/gensim/install.html>
