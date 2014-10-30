@@ -28,3 +28,12 @@ vector functions and similarity queries such as TF-IDF. Also implements
 topic modelling such as Latent Semantic Analysis.
 
 * <http://radimrehurek.com/gensim/install.html>
+
+### Django
+
+Python web framework
+
+* <https://www.djangoproject.com/>
+
+### DB (PostgreSQL / MySQL / SQLite
+
