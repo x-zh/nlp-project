@@ -28,6 +28,8 @@ topic modelling such as Latent Semantic Analysis.
 
 * <http://radimrehurek.com/gensim/install.html>
 
+* <https://github.com/piskvorky/gensim/>
+
 For successfully installing gensim, you need Fortran compiler. Run the following command to install it. (It might take you a while...) Also, you may need to update your brew first. (See 'Troubleshooting' section for how to update brew)
 
 `brew install gfortran`
