@@ -13,14 +13,16 @@ Copyright (C) 2012 Brian Wesley Baugh
 
 from __future__ import division
 from __future__ import with_statement
+from Queue import Queue
 import os
-import multiprocessing
 import logging
 import collections
 import operator
 import codecs
 import string
 import math
+import sys
+from utils import log_error
 
 try:
     import cPickle as pickle
@@ -55,13 +57,13 @@ from nltk.corpus import stopwords
 # MODULE CONFIGURATION
 
 # How many page worker threads to use
-NUMBER_OF_PROCESSES = max(1, multiprocessing.cpu_count() - 1)
+# NUMBER_OF_PROCESSES = max(1, multiprocessing.cpu_count() - 1)
 
 # How many pages to send to each worker at a time.
 CHUNK_SIZE = 32
 
 # Arbitrary amount
-MAX_QUEUE_ITEMS = NUMBER_OF_PROCESSES
+# MAX_QUEUE_ITEMS = NUMBER_OF_PROCESSES
 
 # Logging display level
 logging.basicConfig(level=logging.DEBUG)
@@ -72,13 +74,8 @@ tokenizer = nltk.tokenize.TreebankWordTokenizer()
 stemmer = None
 lemmatizer = nltk.WordNetLemmatizer()
 PUNKT_FNAME = "wiki_punkt.pickle"
-try:
-    with open(PUNKT_FNAME, mode='rb') as f:
-        sent_detector = pickle.load(f)
-except (IOError, pickle.UnpicklingError):
-    sent_detector = None
+g_sent_detector = None
 STOPWORDS = [lemmatizer.lemmatize(t) for t in stopwords.words('english')]
-
 
 # CONSTANTS AND GLOBAL VARS
 LINE_SEPARATOR = u'\u2028'
@@ -141,8 +138,11 @@ class Index(object):
 
     def load_mongo(self):
         """Connect to the MongoDB server and select the database."""
+        print 'Connect mongodb: localhost on port 27017'
         self.mongo_conn = pymongo.Connection('localhost', 27017)
+        print 'mongo db name:', mongo_db_name(self.base_fname)
         self.mongo_db = self.mongo_conn[mongo_db_name(self.base_fname)]
+        print 'self.mongo_db: ', self.mongo_db
 
     def load_dict(self):
         """Load the (gensim) Dictionary representing the vocabulary.
@@ -457,12 +457,16 @@ def regularize(tokens):
 
 
 def first_pass_worker(taskq, doneq):
+    print 'first_pass_worker start'
     """Processes pages to make a plain-text corpus from the original dump."""
     logger = logging.getLogger('worker')
     done_buff = []
     try:
         while True:
-            chunk = taskq.get()
+            if taskq.empty():
+                print 'return'
+                return
+            chunk = taskq.get(block=False)
             if chunk is None:
                 return
             for page in chunk:
@@ -474,17 +478,23 @@ def first_pass_worker(taskq, doneq):
                 done_buff.append(page)
             doneq.put(done_buff)
             done_buff = []
+    except:
+        log_error(sys.exc_info())
     finally:
+        print 'first_pass_worker end'
         doneq.put(None)
 
 
 def second_pass_worker(taskq, doneq):
     """Counts tokens from the plain-text corpus to create an index."""
+    print 'second_pass_worker start'
     logger = logging.getLogger('worker')
     done_buff = []
     try:
         while True:
-            chunk = taskq.get()
+            if taskq.empty():
+                return
+            chunk = taskq.get(block=False)
             if chunk is None:
                 return
             for page in chunk:
@@ -493,27 +503,33 @@ def second_pass_worker(taskq, doneq):
                 done_buff.append(page)
             doneq.put(done_buff)
             done_buff = []
+    except:
+        log_error(sys.exc_info())
     finally:
         doneq.put(None)
+        print 'second_pass_worker end'
 
 
 def first_pass_writer(doneq, wiki_location):
     """Extracts the Dictionary (vocabulary) and writes plain-text corpus."""
-    pill_count = 0  # termination condition (poison pill)
-    dictionary = gensim.corpora.dictionary.Dictionary()
+    # pill_count = 0  # termination condition (poison pill)
+    dictionary = gensim.corpora.Dictionary()
     try:
         with codecs.open(wiki_location + '.txt',
                          mode='w',
                          encoding='utf-8') as txt:
             # Begin processing chunks as they come in.
             while True:
-                chunk = doneq.get()
+                if doneq.empty():
+                    return
+                chunk = doneq.get(block=False)
                 if chunk is None:
-                    pill_count += 1
-                    if pill_count == NUMBER_OF_PROCESSES:
-                        return
-                    else:
-                        continue
+                    # pill_count += 1
+                    # if pill_count == NUMBER_OF_PROCESSES:
+                    # return
+                    # else:
+                    #     continue
+                    return
                 for page in chunk:
                     # Send all tokens from document to Dictionary
                     all_tokens = []
@@ -528,6 +544,8 @@ def first_pass_writer(doneq, wiki_location):
                     # page.text = unicode(page.text)
                     txt.write('\t'.join([str(page.ID), page.title, para_sent])
                               + '\n')
+    except:
+        log_error(sys.exc_info())
     finally:
         # Save token indices
         # TODO(bwbaugh): Make the filtering of the dictionary configurable.
@@ -537,8 +555,10 @@ def first_pass_writer(doneq, wiki_location):
 
 def second_pass_writer(doneq, wiki_location):
     """Writes various index files for fast searching and retrieval of pages."""
+    print 'second_pass_writer start'
 
     if pymongo:
+        print 'pymongo'
         mongo_conn = pymongo.Connection('localhost', 27017)
         mongo_db = mongo_conn[mongo_db_name(wiki_location)]
         mongo_toki = mongo_db['toki']
@@ -547,7 +567,7 @@ def second_pass_writer(doneq, wiki_location):
     else:
         token_docs = collections.defaultdict(set)
     token_counts = collections.defaultdict(int)
-    dictionary = (gensim.corpora.dictionary.Dictionary().
+    dictionary = (gensim.corpora.Dictionary().
                   load_from_text(wiki_location + '.dict'))
     try:
         with codecs.open(wiki_location + '.pagi',
@@ -559,13 +579,16 @@ def second_pass_writer(doneq, wiki_location):
             # Begin processing chunks as they come in.
             pill_count = 0  # termination condition (poison pill)
             while True:
-                chunk = doneq.get()
+                if doneq.empty():
+                    return
+                chunk = doneq.get(block=False)
                 if chunk is None:
-                    pill_count += 1
-                    if pill_count == NUMBER_OF_PROCESSES:
-                        return
-                    else:
-                        continue
+                    # pill_count += 1
+                    # if pill_count == NUMBER_OF_PROCESSES:
+                    # return
+                    # else:
+                    #     continue
+                    return
                 if pymongo:
                     # Used to store pages from the chunk for a batch insert.
                     mongo_list = []
@@ -599,6 +622,8 @@ def second_pass_writer(doneq, wiki_location):
                     # Batch insert all pages from this chunk.
                     mongo_toki.insert([{'_id': ID, 'tok': token_list} for
                                        ID, token_list in mongo_list])
+    except:
+        log_error(sys.exc_info())
     finally:
         # Save token indices
         with open(wiki_location + '.tokc', mode='wb') as tokc:
@@ -609,6 +634,7 @@ def second_pass_writer(doneq, wiki_location):
         else:
             with open(wiki_location + '.toki', mode='wb') as toki:
                 pickle.dump(token_docs, toki, protocol=pickle.HIGHEST_PROTOCOL)
+        print 'second_pass_writer end'
 
 
 def create_punkt_sent_detector(fname, progress_count, max_pages=25000):
@@ -639,14 +665,31 @@ def create_punkt_sent_detector(fname, progress_count, max_pages=25000):
                           page.ID, page.title)
     except KeyboardInterrupt:
         print 'KeyboardInterrupt: Stopping the reading of the dump early!'
+    except:
+        log_error(sys.exc_info())
 
     logger.info('Now finalzing Punkt training.')
 
+    from nltk.tokenize.punkt import PunktSentenceTokenizer
+
     punkt.finalize_training(verbose=True)
     learned = punkt.get_params()
-    sbd = nltk.tokenize.punkt.PunktSentenceTokenizer(learned)
+    sbd = PunktSentenceTokenizer(learned)
     with open(PUNKT_FNAME, mode='wb') as f:
         pickle.dump(sbd, f, protocol=pickle.HIGHEST_PROTOCOL)
+
+
+def get_punkt_sent_detector():
+    global g_sent_detector
+
+    if g_sent_detector:
+        return g_sent_detector
+    try:
+        with open(PUNKT_FNAME, mode='rb') as f:
+            g_sent_detector = pickle.load(f)
+    except (IOError, pickle.UnpicklingError):
+        g_sent_detector = None
+    return g_sent_detector
 
 
 def first_pass(fname, progress_count=None, max_pages=None):
@@ -656,22 +699,24 @@ def first_pass(fname, progress_count=None, max_pages=None):
     wiki_size = os.path.getsize(fname)
 
     # Page task queues for parallel processing
-    taskq = multiprocessing.Queue(MAX_QUEUE_ITEMS)
-    doneq = multiprocessing.Queue(MAX_QUEUE_ITEMS)
+    # taskq = multiprocessing.Queue(MAX_QUEUE_ITEMS)
+    # doneq = multiprocessing.Queue(MAX_QUEUE_ITEMS)
+    taskq = Queue()
+    doneq = Queue()
 
     # Start worker processes
     logger.info('Starting workers')
-    workers = []
-    for i in range(NUMBER_OF_PROCESSES):
-        p = multiprocessing.Process(target=first_pass_worker,
-                                    args=(taskq, doneq))
-        p.start()
-        workers.append(p)
+    # workers = []
+    # for i in range(NUMBER_OF_PROCESSES):
+    # p = multiprocessing.Process(target=first_pass_worker,
+    #                                 args=(taskq, doneq))
+    #     p.start()
+    #     workers.append(p)
 
     # Start log writer process
-    p = multiprocessing.Process(target=first_pass_writer, args=(doneq, fname))
-    p.start()
-    workers.append(p)
+    # p = multiprocessing.Process(target=first_pass_writer, args=(doneq, fname))
+    # p.start()
+    # workers.append(p)
 
     # Process XML dump
     logger.info('Begining XML parse')
@@ -692,31 +737,40 @@ def first_pass(fname, progress_count=None, max_pages=None):
                 if page_count == max_pages:
                     break
                 if page_count % progress_count == 0:
-                    print(page_count, page.start,
-                          (page.start / wiki_size * 100),
-                          taskq.qsize(), doneq.qsize(),
-                          page.ID, page.title)
+                    print (page_count, page.start,
+                           (page.start / wiki_size * 100),
+                           taskq.qsize(), doneq.qsize(),
+                           page.ID, page.title)
     except KeyboardInterrupt:
         print 'KeyboardInterrupt: Stopping the reading of the dump early!'
+    except:
+        log_error(sys.exc_info())
     finally:
         # Flush task buffer
         taskq.put(task_buff)
         task_buff = []
         # Tell child processes to stop
-        for i in range(NUMBER_OF_PROCESSES):
-            taskq.put(None)
+        # for i in range(NUMBER_OF_PROCESSES):
+        #     taskq.put(None)
+        taskq.put(None)
+
+    first_pass_worker(taskq, doneq)
+
+    first_pass_writer(doneq, fname)
 
     logger.info('All done! Processed %s total pages.', page_count)
 
     # Wait for all child processes to stop (especially that writer!)
-    for p in workers:
-        p.join()
+    # for p in workers:
+    #     p.join()
 
 
 # Main function of module
 def create_index(fname, progress_count=None, max_pages=None):
     """Processes a corpus to create a corresponding Index object."""
     logger = logging.getLogger('create_index')
+
+    sent_detector = get_punkt_sent_detector()
 
     if sent_detector is None:
         create_punkt_sent_detector(fname=fname,
@@ -725,11 +779,12 @@ def create_index(fname, progress_count=None, max_pages=None):
 
     # Set params
     if progress_count is None:
-        progress_count = CHUNK_SIZE * NUMBER_OF_PROCESSES
+        # progress_count = CHUNK_SIZE * NUMBER_OF_PROCESSES
+        progress_count = CHUNK_SIZE
 
     # First pass, create Dictionary and plain-text version of corpus.
     try:
-        dictionary = (gensim.corpora.dictionary.Dictionary().
+        dictionary = (gensim.corpora.Dictionary().
                       load_from_text(fname + '.dict'))
         if not dictionary or check_plain_corpus(fname):
             raise IndexLoadError
@@ -739,37 +794,38 @@ def create_index(fname, progress_count=None, max_pages=None):
         del dictionary
 
     # Page task queues for parallel processing
-    taskq = multiprocessing.Queue(MAX_QUEUE_ITEMS)
-    doneq = multiprocessing.Queue(MAX_QUEUE_ITEMS)
+    # taskq = multiprocessing.Queue(MAX_QUEUE_ITEMS)
+    # doneq = multiprocessing.Queue(MAX_QUEUE_ITEMS)
+    taskq = Queue()
+    doneq = Queue()
 
     # Start worker processes
     logger.info('Starting workers')
-    workers = []
-    for i in range(NUMBER_OF_PROCESSES):
-        p = multiprocessing.Process(target=second_pass_worker,
-                                    args=(taskq, doneq))
-        p.start()
-        workers.append(p)
+    # workers = []
+    # for i in range(NUMBER_OF_PROCESSES):
+    # p = multiprocessing.Process(target=second_pass_worker,
+    #                                 args=(taskq, doneq))
+    #     p.start()
+    #     workers.append(p)
 
     # Start log writer process
-    p = multiprocessing.Process(target=second_pass_writer, args=(doneq, fname))
-    p.start()
-    workers.append(p)
+    # p = multiprocessing.Process(target=second_pass_writer, args=(doneq, fname))
+    # p.start()
+    # workers.append(p)
 
     # We are now working with the plain-text corpus generated in the 1st pass.
-    fname += '.txt'
-
-    wiki_size = os.path.getsize(fname)
+    fname_txt = fname + '.txt'
 
     # Process XML dump
     logger.info('Begining plain-text parse')
 
-    wiki_size = os.path.getsize(fname)
+    wiki_size = os.path.getsize(fname_txt)
+
     page_count = 0
 
     task_buff = []
     try:
-        with open(fname, mode='rb') as wiki_dump:
+        with open(fname_txt, mode='rb') as wiki_dump:
             pages = plain_page_generator(wiki_dump)
             for page in pages:
                 task_buff.append(page)
@@ -786,19 +842,26 @@ def create_index(fname, progress_count=None, max_pages=None):
                           page.ID, page.title)
     except KeyboardInterrupt:
         print 'KeyboardInterrupt: Stopping the reading of the dump early!'
+    except:
+        log_error(sys.exc_info())
     finally:
         # Flush task buffer
         taskq.put(task_buff)
         task_buff = []
         # Tell child processes to stop
-        for i in range(NUMBER_OF_PROCESSES):
-            taskq.put(None)
+        # for i in range(NUMBER_OF_PROCESSES):
+        #     taskq.put(None)
+        taskq.put(None)
+
+    second_pass_worker(taskq, doneq)
+
+    second_pass_writer(doneq, fname)
 
     logger.info('All done! Processed %s total pages.', page_count)
 
     # Wait for all child processes to stop (especially that writer!)
-    for p in workers:
-        p.join()
+    # for p in workers:
+    #     p.join()
 
 
 # PROJECT MODULE IMPORTS

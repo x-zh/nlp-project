@@ -1,10 +1,14 @@
 from django.conf.urls import patterns, include, url
 # from django.contrib import admin
+from django.conf.urls.static import static
+from nlp_question_answer import settings
 
 urlpatterns = patterns('',
-    # Examples:
-    # url(r'^$', 'nlp_question_answer.views.home', name='home'),
-    # url(r'^blog/', include('blog.urls')),
+) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
-    # url(r'^admin/', include(admin.site.urls)),
-)
+
+from qa import views as web
+urlpatterns += patterns('',
+                        url(r'^$', web.index, name='web_index'),
+                        url(r'^cause/$', web.query_handler, name='web_query'),
+                        )

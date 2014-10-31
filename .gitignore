@@ -3,9 +3,15 @@
 # database
 *.sqlite3
 
+# data
+data/
+*.xml
+*.pickle
+
 # Logs
 logs
 *.log
+log_training.txt
 
 # Runtime data
 pids

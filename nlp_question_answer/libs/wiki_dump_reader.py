@@ -2,8 +2,8 @@
 """Provides functions and classes that deal with parsing a Wikipedia dump."""
 # Python packages
 import re
-import collections
 import operator
+import collections
 
 import WikiExtractor
 
@@ -17,7 +17,7 @@ except ImportError:
 from unidecode import unidecode
 
 # Project modules
-from qa.indexer import (LINE_SEPARATOR, PARAGRAPH_SEPARATOR, sent_detector, tokenizer, regularize, page_length_limit)
+from qa.indexer import (LINE_SEPARATOR, PARAGRAPH_SEPARATOR, tokenizer, regularize, page_length_limit, get_punkt_sent_detector)
 
 
 # MODULE CONFIGURATION
@@ -56,6 +56,7 @@ class Paragraph(object):
         if LINE_SEPARATOR in self.text:
             self.sentences = [sent for sent in self.text.split(LINE_SEPARATOR)]
         else:
+            sent_detector = get_punkt_sent_detector()
             self.sentences = sent_detector.tokenize(self.text,
                                                     realign_boundaries=True)
 
@@ -63,7 +64,8 @@ class Paragraph(object):
         """Tokenize each sentence in the list into a list of tokens."""
         if not self.sentences:
             self.segment_sentences()
-        self.sentence_tokens = tokenizer.batch_tokenize(self.sentences)
+        # self.sentence_tokens = tokenizer.batch_tokenize(self.sentences)
+        self.sentence_tokens = tokenizer.tokenize_sents(self.sentences)
 
 
 class Page(object):
@@ -151,15 +153,16 @@ class Page(object):
 
     def count_tokens(self):
         """Count the frequency of text's tokens in a bag-of-words style."""
-        self.token_count = collections.defaultdict(int)
+        token_count = collections.defaultdict(int)
         for paragraph in self.paragraphs:
             for sentence in paragraph.sentence_tokens:
                 for token in sentence:
-                    self.token_count[str(token)] += 1
-        self.token_count = [(token, count) for (token, count) in \
-                            sorted(self.token_count.iteritems(),
-                                   key=operator.itemgetter(1),
-                                   reverse=True)]
+                    token_count[token] += 1
+        self.token_count = []
+        for (token, count) in sorted(token_count.iteritems(),
+                                     key=operator.itemgetter(1),
+                                     reverse=True):
+            self.token_count.append((token, count))
 
     def __str__(self):
         """Creates a string including ID, title, and original text."""
