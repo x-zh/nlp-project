@@ -58,4 +58,4 @@ Troubleshooting
 
 * [Installing GCC on OS X Yosemite via Homebrew - make[1]: [stage2-bubble] Error 2 make: [bootstrap] Error 2](http://bordoni.me/environment/gcc-os-x-yosemite-via-homebrew/)
 
-* [Install scipy - Issue installing GCC using homebrew (scipy package dependency)](http://apple.stackexchange.com/questions/142308/issue-installing-gcc-using-homebrew-scipy-package-dependency)
+* [Install freetype and scipy - Issue installing GCC using homebrew (scipy package dependency)](http://apple.stackexchange.com/questions/142308/issue-installing-gcc-using-homebrew-scipy-package-dependency)
