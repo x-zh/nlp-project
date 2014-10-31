@@ -42,7 +42,11 @@ Python web framework
 
 * <https://www.djangoproject.com/>
 
-### DB (PostgreSQL / MySQL / SQLite
+### DB (PostgreSQL / MySQL / SQLite)
+
+### Wiki Data
+
+* [simple english-wikipedia-6/10/10 (6/10/10)](https://archive.org/details/simplewiki_20100610)
 
 
 References
