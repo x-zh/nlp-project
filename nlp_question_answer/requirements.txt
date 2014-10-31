@@ -11,3 +11,4 @@ python-dateutil==2.2
 pytz==2014.7
 six==1.8.0
 Unidecode==0.04.16
+mongoengine==0.8.7
