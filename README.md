@@ -32,6 +32,8 @@ For successfully installing gensim, you need Fortran compiler. Run the following
 
 `brew install gfortran`
 
+If the above command fails, try `Install freetype and scipy - Issue installing GCC using homebrew (scipy package dependency)` in the Troubleshooting section.
+
 ### Django
 
 Python web framework
