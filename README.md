@@ -52,6 +52,12 @@ References
 
 * [如何计算两个文档的相似度](http://www.52nlp.cn/%E5%A6%82%E4%BD%95%E8%AE%A1%E7%AE%97%E4%B8%A4%E4%B8%AA%E6%96%87%E6%A1%A3%E7%9A%84%E7%9B%B8%E4%BC%BC%E5%BA%A6%E4%B8%80)
 
+* [Setting up Django with MongoDB](http://petrkout.com/programming/setting-up-django-with-mongodb/)
+
+* [Using MongoDB with Django](http://www.ibm.com/developerworks/library/os-django-mongo/)
+
+* [Entry point hook for Django projects](http://eldarion.com/blog/2013/02/14/entry-point-hook-django-projects/)
+
 
 Troubleshooting
 ------------------
