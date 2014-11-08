@@ -27,7 +27,7 @@
             {% for answer in answers %}
                 <tr>
                     <td>{{ forloop.counter0 }}</td>
-                    <td><a href="http://simple.wikipedia.org/?curid={{ answer.page.ID }}"
+                    <td><a href="{{ answer.page.link }}" target="_blank"
                            title="Score: {{ answer.score }}">{{ answer.page.title }}</a></td>
                     <td>{{ answer.text }}</td>
                 </tr>

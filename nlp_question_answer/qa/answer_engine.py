@@ -181,6 +181,7 @@ class AnswerEngine(object):
             from the internal list of (relevant) Pages. This list is also
             available by accessing the answers attribute of the instance.
         """
+        
         self._analyze_query()
         self._analyze_pages()
         self._extract_answers()

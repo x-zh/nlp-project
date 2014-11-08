@@ -19,8 +19,8 @@ def query_handler(request):
     template_values = {}
     if request.method == 'GET':
         query = request.GET.get('q')
-        num_top = request.GET.get('top', 5)
-        num = request.GET.get('num', 100)
+        num_top = request.GET.get('top', 10)
+        num = request.GET.get('num', 10)
         start = request.GET.get('start', 0)
         lch = request.GET.get('lch', 2.16)
         log_training = bool(request.GET.get('train', False))
