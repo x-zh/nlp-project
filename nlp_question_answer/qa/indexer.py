@@ -22,7 +22,9 @@ import codecs
 import string
 import math
 import sys
+
 from utils import log_error
+
 
 try:
     import cPickle as pickle
@@ -73,7 +75,6 @@ tokenizer = nltk.tokenize.TreebankWordTokenizer()
 # stemmer = nltk.PorterStemmer()
 stemmer = None
 lemmatizer = nltk.WordNetLemmatizer()
-PUNKT_FNAME = "wiki_punkt.pickle"
 g_sent_detector = None
 STOPWORDS = [lemmatizer.lemmatize(t) for t in stopwords.words('english')]
 
@@ -104,7 +105,7 @@ class Index(object):
     pages that match a term list (either by union or intersection).
 
     Attributes:
-        base_fname: The string filename (including path) of the corpus.
+        base_filename: The string filename (including path) of the corpus.
         mongo_conn: If present, is the Connection object for the MongoDB
             driver (interface).
         mongo_db: If present, is the MongoDB database, named after the
@@ -121,10 +122,10 @@ class Index(object):
             token exists in the document.
     """
 
-    def __init__(self, base_fname, doci_in_memory=False):
-        """Loads all indices for the base_fname Wikipedia dump."""
-        self.base_fname = base_fname
-        check_plain_corpus(base_fname)
+    def __init__(self, base_filename, doci_in_memory=False):
+        """Loads all indices for the base_filename data dump."""
+        self.base_filename = base_filename
+        check_plain_corpus(base_filename)
         if pymongo:
             self.load_mongo()
         self.load_dict()
@@ -140,8 +141,8 @@ class Index(object):
         """Connect to the MongoDB server and select the database."""
         print 'Connect mongodb: localhost on port 27017'
         self.mongo_conn = pymongo.Connection('localhost', 27017)
-        print 'mongo db name:', mongo_db_name(self.base_fname)
-        self.mongo_db = self.mongo_conn[mongo_db_name(self.base_fname)]
+        print 'mongo db name:', mongo_db_name(self.base_filename)
+        self.mongo_db = self.mongo_conn[mongo_db_name(self.base_filename)]
         print 'self.mongo_db: ', self.mongo_db
 
     def load_dict(self):
@@ -152,28 +153,30 @@ class Index(object):
         """
         try:
             self.dict = (gensim.corpora.Dictionary().
-                         load_from_text(self.base_fname + '.dict'))
+                         load_from_text(self.base_filename + '.dict'))
         except IOError:
+            log_error(sys.exc_info())
             raise IndexLoadError
 
     def load_pagi(self):
         """Load the page index {page.ID -> page.start, doci.offset}"""
         self.pagi = dict()
         try:
-            with codecs.open(self.base_fname + '.pagi', encoding='utf-8') as f:
+            with codecs.open(self.base_filename + '.pagi', encoding='utf-8') as f:
                 for line in f:
                     ID, start, offset = line.split('\t')
                     self.pagi[int(ID)] = (int(start), int(offset))
             if not self.pagi:
                 raise IndexLoadError
         except (IOError, ValueError):
+            log_error(sys.exc_info())
             raise IndexLoadError
 
     def load_doci(self):
         """Load the document index {page.ID -> page.token_count} in memory"""
         self.doci = collections.defaultdict(dict)
         try:
-            with codecs.open(self.base_fname + '.doci', encoding='utf-8') as f:
+            with codecs.open(self.base_filename + '.doci', encoding='utf-8') as f:
                 for line in f:
                     ID, token_counts = line.split('\t', 1)
                     for token_count in token_counts.split('\t'):
@@ -182,16 +185,18 @@ class Index(object):
             if not self.doci:
                 raise IndexLoadError
         except IOError:
+            log_error(sys.exc_info())
             raise IndexLoadError
 
     def load_tokc(self):
         """Load the token-count index {tokc[token] -> count}"""
         try:
-            with open(self.base_fname + '.tokc', mode='rb') as f:
+            with open(self.base_filename + '.tokc', mode='rb') as f:
                 self.tokc = pickle.load(f)
             if not self.tokc:
                 raise IndexLoadError
         except (IOError, pickle.UnpicklingError):
+            log_error(sys.exc_info())
             raise IndexLoadError
 
     def load_toki(self):
@@ -201,12 +206,12 @@ class Index(object):
     def get_page(self, ID):
         """Returns the corresponding Page object residing on disk."""
 
-        def find_page(start):
-            wiki_dump.seek(start)
-            pages = plain_page_generator(wiki_dump)
-            return next(pages)
+        def find_page(start_offset):
+            data_dump.seek(start_offset)
+            next_pages = plain_page_generator(data_dump)
+            return next(next_pages)
 
-        with open(self.base_fname + '.txt', mode='rb') as wiki_dump:
+        with open(self.base_filename + '.txt', mode='rb') as data_dump:
             try:
                 iterator = iter(ID)
             except TypeError:
@@ -335,7 +340,7 @@ class DocI(object):
         self.index = index
         # Make sure the file can open and at least the first line is parsable.
         try:
-            with codecs.open(self.index.base_fname + '.doci',
+            with codecs.open(self.index.base_filename + '.doci',
                              encoding='utf-8') as f:
                 line = f.readline()
                 ID, token_counts = line.split('\t', 1)
@@ -348,7 +353,7 @@ class DocI(object):
     def __getitem__(self, ID):
         """Retrieve the dictionary result of: {page.ID -> page.token_count}"""
         counts = dict()
-        with codecs.open(self.index.base_fname + '.doci',
+        with codecs.open(self.index.base_filename + '.doci',
                          encoding='utf-8') as f:
             start, offset = self.index.pagi[ID]
             f.seek(offset)
@@ -385,7 +390,7 @@ class TokI(object):
         else:
             # Load into memory (not suitable for large corpora!)
             try:
-                with open(self.index.base_fname + '.toki', mode='rb') as f:
+                with open(self.index.base_filename + '.toki', mode='rb') as f:
                     self.toki = pickle.load(f)
                 if not self.toki:
                     raise IndexLoadError
@@ -418,22 +423,20 @@ class TokI(object):
             return key in self.toki
 
 
-# FUNCTIONS
-
-def check_plain_corpus(base_fname):
+def check_plain_corpus(base_filename):
     """Attempts to make sure the plain-text corpus is available."""
     try:
-        with open(base_fname + '.txt') as wiki_dump:
-            pages = plain_page_generator(wiki_dump)
+        with open(base_filename + '.txt') as data_dump:
+            pages = plain_page_generator(data_dump)
             if not next(pages):
                 raise IndexLoadError
     except IOError:
         raise IndexLoadError
 
 
-def mongo_db_name(base_fname):
+def mongo_db_name(base_filename):
     """Use the corpus filename to create the database name."""
-    fname = base_fname.replace('\\', '/').rsplit('/', 1)[1]
+    fname = base_filename.replace('\\', '/').rsplit('/', 1)[1]
     fname = fname.replace('.', '_')
     return fname
 
@@ -464,7 +467,6 @@ def first_pass_worker(taskq, doneq):
     try:
         while True:
             if taskq.empty():
-                print 'return'
                 return
             chunk = taskq.get(block=False)
             if chunk is None:
@@ -510,12 +512,12 @@ def second_pass_worker(taskq, doneq):
         print 'second_pass_worker end'
 
 
-def first_pass_writer(doneq, wiki_location):
+def first_pass_writer(doneq, data_location):
     """Extracts the Dictionary (vocabulary) and writes plain-text corpus."""
     # pill_count = 0  # termination condition (poison pill)
     dictionary = gensim.corpora.Dictionary()
     try:
-        with codecs.open(wiki_location + '.txt',
+        with codecs.open(data_location + '.txt',
                          mode='w',
                          encoding='utf-8') as txt:
             # Begin processing chunks as they come in.
@@ -528,7 +530,7 @@ def first_pass_writer(doneq, wiki_location):
                     # if pill_count == NUMBER_OF_PROCESSES:
                     # return
                     # else:
-                    #     continue
+                    # continue
                     return
                 for page in chunk:
                     # Send all tokens from document to Dictionary
@@ -542,25 +544,24 @@ def first_pass_writer(doneq, wiki_location):
                     para_sent = PARAGRAPH_SEPARATOR.join(para_sent)
                     dictionary.doc2bow(all_tokens, allow_update=True)
                     # page.text = unicode(page.text)
-                    txt.write('\t'.join([str(page.ID), page.title, para_sent])
-                              + '\n')
+                    txt.write('\t'.join([str(page.ID), page.title, page.link, para_sent]) + '\n')
     except:
         log_error(sys.exc_info())
     finally:
         # Save token indices
         # TODO(bwbaugh): Make the filtering of the dictionary configurable.
         # dictionary.filter_extremes(no_below=2, no_above=0.9)
-        dictionary.save_as_text(wiki_location + '.dict')
+        dictionary.save_as_text(data_location + '.dict')
 
 
-def second_pass_writer(doneq, wiki_location):
+def second_pass_writer(doneq, data_location):
     """Writes various index files for fast searching and retrieval of pages."""
     print 'second_pass_writer start'
 
     if pymongo:
         print 'pymongo'
         mongo_conn = pymongo.Connection('localhost', 27017)
-        mongo_db = mongo_conn[mongo_db_name(wiki_location)]
+        mongo_db = mongo_conn[mongo_db_name(data_location)]
         mongo_toki = mongo_db['toki']
         # Delete any existing data
         mongo_toki.drop()
@@ -568,12 +569,12 @@ def second_pass_writer(doneq, wiki_location):
         token_docs = collections.defaultdict(set)
     token_counts = collections.defaultdict(int)
     dictionary = (gensim.corpora.Dictionary().
-                  load_from_text(wiki_location + '.dict'))
+                  load_from_text(data_location + '.dict'))
     try:
-        with codecs.open(wiki_location + '.pagi',
+        with codecs.open(data_location + '.pagi',
                          mode='w',
                          encoding='utf-8') as pagi, \
-                codecs.open(wiki_location + '.doci',
+                codecs.open(data_location + '.doci',
                             mode='w',
                             encoding='utf-8') as doci:
             # Begin processing chunks as they come in.
@@ -587,7 +588,7 @@ def second_pass_writer(doneq, wiki_location):
                     # if pill_count == NUMBER_OF_PROCESSES:
                     # return
                     # else:
-                    #     continue
+                    # continue
                     return
                 if pymongo:
                     # Used to store pages from the chunk for a batch insert.
@@ -626,18 +627,18 @@ def second_pass_writer(doneq, wiki_location):
         log_error(sys.exc_info())
     finally:
         # Save token indices
-        with open(wiki_location + '.tokc', mode='wb') as tokc:
+        with open(data_location + '.tokc', mode='wb') as tokc:
             pickle.dump(token_counts, tokc, protocol=pickle.HIGHEST_PROTOCOL)
         if pymongo:
             mongo_toki.ensure_index('tok')  # blocking
             mongo_conn.disconnect()
         else:
-            with open(wiki_location + '.toki', mode='wb') as toki:
+            with open(data_location + '.toki', mode='wb') as toki:
                 pickle.dump(token_docs, toki, protocol=pickle.HIGHEST_PROTOCOL)
         print 'second_pass_writer end'
 
 
-def create_punkt_sent_detector(fname, progress_count, max_pages=25000):
+def create_punkt_sent_detector(filename, progress_count, max_pages=25000):
     """Makes a pass through the corpus to train a Punkt sentence segmenter."""
     logger = logging.getLogger('create_punkt_sent_detector')
 
@@ -645,12 +646,12 @@ def create_punkt_sent_detector(fname, progress_count, max_pages=25000):
 
     logger.info("Training punkt sentence detector")
 
-    wiki_size = os.path.getsize(fname)
+    data_size = os.path.getsize(filename)
     page_count = 0
 
     try:
-        with open(fname, mode='rb') as wiki_dump:
-            pages = page_generator(wiki_dump)
+        with open(filename, mode='rb') as data_dump:
+            pages = page_generator(data_dump)
             for page in pages:
                 page.preprocess()
                 punkt.train(page.text, finalize=False, verbose=False)
@@ -659,7 +660,7 @@ def create_punkt_sent_detector(fname, progress_count, max_pages=25000):
                     break
                 if page_count % progress_count == 0:
                     print(page_count, page.start,
-                          (page.start / wiki_size * 100),
+                          (page.start / data_size * 100),
                           # taskq.qsize() if taskq is not None else 'n/a',
                           # doneq.qsize() if doneq is not None else 'n/a',
                           page.ID, page.title)
@@ -675,8 +676,14 @@ def create_punkt_sent_detector(fname, progress_count, max_pages=25000):
     punkt.finalize_training(verbose=True)
     learned = punkt.get_params()
     sbd = PunktSentenceTokenizer(learned)
-    with open(PUNKT_FNAME, mode='wb') as f:
+    with open(get_punkt_filename(), mode='wb') as f:
         pickle.dump(sbd, f, protocol=pickle.HIGHEST_PROTOCOL)
+
+
+def get_punkt_filename():
+    from qa.config import TARGET_NAME
+
+    return "%s_punkt.pickle" % TARGET_NAME
 
 
 def get_punkt_sent_detector():
@@ -685,18 +692,16 @@ def get_punkt_sent_detector():
     if g_sent_detector:
         return g_sent_detector
     try:
-        with open(PUNKT_FNAME, mode='rb') as f:
+        with open(get_punkt_filename(), mode='rb') as f:
             g_sent_detector = pickle.load(f)
     except (IOError, pickle.UnpicklingError):
         g_sent_detector = None
     return g_sent_detector
 
 
-def first_pass(fname, progress_count=None, max_pages=None):
+def first_pass(filename, progress_count=None, max_pages=None):
     """Extract a Dictionary and create plain-text version of corpus."""
     logger = logging.getLogger('first_pass')
-
-    wiki_size = os.path.getsize(fname)
 
     # Page task queues for parallel processing
     # taskq = multiprocessing.Queue(MAX_QUEUE_ITEMS)
@@ -709,7 +714,7 @@ def first_pass(fname, progress_count=None, max_pages=None):
     # workers = []
     # for i in range(NUMBER_OF_PROCESSES):
     # p = multiprocessing.Process(target=first_pass_worker,
-    #                                 args=(taskq, doneq))
+    # args=(taskq, doneq))
     #     p.start()
     #     workers.append(p)
 
@@ -721,13 +726,13 @@ def first_pass(fname, progress_count=None, max_pages=None):
     # Process XML dump
     logger.info('Begining XML parse')
 
-    wiki_size = os.path.getsize(fname)
+    data_size = os.path.getsize(filename)
     page_count = 0
 
     task_buff = []
     try:
-        with open(fname, mode='rb') as wiki_dump:
-            pages = page_generator(wiki_dump)
+        with open(filename, mode='rb') as data_dump:
+            pages = page_generator(data_dump)
             for page in pages:
                 task_buff.append(page)
                 if len(task_buff) == CHUNK_SIZE:
@@ -738,7 +743,7 @@ def first_pass(fname, progress_count=None, max_pages=None):
                     break
                 if page_count % progress_count == 0:
                     print (page_count, page.start,
-                           (page.start / wiki_size * 100),
+                           (page.start / data_size * 100),
                            taskq.qsize(), doneq.qsize(),
                            page.ID, page.title)
     except KeyboardInterrupt:
@@ -756,7 +761,7 @@ def first_pass(fname, progress_count=None, max_pages=None):
 
     first_pass_worker(taskq, doneq)
 
-    first_pass_writer(doneq, fname)
+    first_pass_writer(doneq, filename)
 
     logger.info('All done! Processed %s total pages.', page_count)
 
@@ -766,14 +771,14 @@ def first_pass(fname, progress_count=None, max_pages=None):
 
 
 # Main function of module
-def create_index(fname, progress_count=None, max_pages=None):
+def create_index(filename, progress_count=None, max_pages=None):
     """Processes a corpus to create a corresponding Index object."""
     logger = logging.getLogger('create_index')
 
     sent_detector = get_punkt_sent_detector()
 
     if sent_detector is None:
-        create_punkt_sent_detector(fname=fname,
+        create_punkt_sent_detector(filename=filename,
                                    progress_count=CHUNK_SIZE,
                                    max_pages=min(25000, max_pages))
 
@@ -785,11 +790,11 @@ def create_index(fname, progress_count=None, max_pages=None):
     # First pass, create Dictionary and plain-text version of corpus.
     try:
         dictionary = (gensim.corpora.Dictionary().
-                      load_from_text(fname + '.dict'))
-        if not dictionary or check_plain_corpus(fname):
+                      load_from_text(filename + '.dict'))
+        if not dictionary or check_plain_corpus(filename):
             raise IndexLoadError
     except (IOError, IndexLoadError):
-        first_pass(fname, progress_count, max_pages)
+        first_pass(filename, progress_count, max_pages)
     else:
         del dictionary
 
@@ -804,7 +809,7 @@ def create_index(fname, progress_count=None, max_pages=None):
     # workers = []
     # for i in range(NUMBER_OF_PROCESSES):
     # p = multiprocessing.Process(target=second_pass_worker,
-    #                                 args=(taskq, doneq))
+    # args=(taskq, doneq))
     #     p.start()
     #     workers.append(p)
 
@@ -814,19 +819,19 @@ def create_index(fname, progress_count=None, max_pages=None):
     # workers.append(p)
 
     # We are now working with the plain-text corpus generated in the 1st pass.
-    fname_txt = fname + '.txt'
+    fname_txt = filename + '.txt'
 
     # Process XML dump
     logger.info('Begining plain-text parse')
 
-    wiki_size = os.path.getsize(fname_txt)
+    data_size = os.path.getsize(fname_txt)
 
     page_count = 0
 
     task_buff = []
     try:
-        with open(fname_txt, mode='rb') as wiki_dump:
-            pages = plain_page_generator(wiki_dump)
+        with open(fname_txt, mode='rb') as data_dump:
+            pages = plain_page_generator(data_dump)
             for page in pages:
                 task_buff.append(page)
                 if len(task_buff) == CHUNK_SIZE:
@@ -837,7 +842,7 @@ def create_index(fname, progress_count=None, max_pages=None):
                     break
                 if page_count % progress_count == 0:
                     print(page_count, page.start,
-                          (page.start / wiki_size * 100),
+                          (page.start / data_size * 100),
                           taskq.qsize(), doneq.qsize(),
                           page.ID, page.title)
     except KeyboardInterrupt:
@@ -855,7 +860,7 @@ def create_index(fname, progress_count=None, max_pages=None):
 
     second_pass_worker(taskq, doneq)
 
-    second_pass_writer(doneq, fname)
+    second_pass_writer(doneq, filename)
 
     logger.info('All done! Processed %s total pages.', page_count)
 
@@ -866,4 +871,7 @@ def create_index(fname, progress_count=None, max_pages=None):
 
 # PROJECT MODULE IMPORTS
 
-from libs.wiki_dump_reader import page_generator, plain_page_generator
+# Old page_generator from Wesley Baugh (bwbaugh)'s project causeofwhy.
+# from libs.wiki_dump_reader import page_generator, plain_page_generator
+
+from utils.page_reader import page_generator, plain_page_generator
