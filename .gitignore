@@ -96,4 +96,4 @@ htmlcov/
 .cache
 nosetests.xml
 coverage.xml
-
+.ropeproject/

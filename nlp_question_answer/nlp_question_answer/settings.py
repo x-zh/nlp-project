@@ -58,8 +58,12 @@ WSGI_APPLICATION = 'nlp_question_answer.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'nlp',
+        'USER': 'root',
+        'password': '',
+        'host': '',
+        'port': ''
     }
 }
 
@@ -87,33 +91,6 @@ USE_TZ = True
 # the site admins on every HTTP 500 error.
 # See http://docs.djangoproject.com/en/dev/topics/logging for
 # more details on how to customize your logging configuration.
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': True,
-    'formatters': {
-        'standard': {
-            'format': '%(asctime)s %(levelname)s : %(filename)s - %(funcName)s - [%(lineno)s] %(message)s'
-        },
-    },
-    'handlers': {
-        'tanao_handler': {
-            'level': 'ERROR',
-            'class': 'logging.handlers.TimedRotatingFileHandler',
-            'filename': os.path.join(BASE_DIR, 'logs/logs.log'),
-            'when': 'D',
-            # S - Seconds M - Minutes H - Hours   D - Days    midnight - roll over at midnight    W{0-6} - roll over on a certain day; 0 - Monday
-            'interval': 1,
-            'formatter': 'standard',
-        },
-    },
-    'loggers': {
-        'tanao': {
-            'handlers': ['tanao_handler'],
-            'level': 'ERROR',
-            'propagate': False,
-        },
-    }
-}
 
 
 # Static files (CSS, JavaScript, Images)
