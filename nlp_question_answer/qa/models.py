@@ -12,3 +12,9 @@ class Pages(models.Model):
     p = models.TextField()
     div = models.TextField()
     dt = models.DateTimeField(auto_now=True)
+
+
+class Paragraph(models.Model):
+    url = models.URLField()
+    title = models.TextField()
+    content = models.TextField()

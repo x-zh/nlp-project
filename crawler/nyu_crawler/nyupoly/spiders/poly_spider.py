@@ -3,7 +3,8 @@ import os
 from scrapy import Spider
 from scrapy.selector import Selector
 from scrapy.http import Request
-from nyupoly.items import PagesItem
+from nyupoly.items import PagesItem, ParagraphItem
+import codecs
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
@@ -37,6 +38,16 @@ class LinksListSpider(Spider):
         p['h4'] = self.joinwithoutempty(sel.xpath('//h4//text()').extract())
         p['h5'] = self.joinwithoutempty(sel.xpath('//h5//text()').extract())
         p['p'] = self.joinwithoutempty(sel.xpath('//p//text()').extract())
-        p['div'] = self.joinwithoutempty(sel.xpath('//div//text()').extract())
+        for pt in sel.xpath('//div//text()').extract():
+            if pt.strip() and len(pt.strip()) > 2:
+                pp = ParagraphItem()
+                pp['url'] = response.url
+                pp['content'] = pt
+                pp['title'] = p['title']
+                pp.save()
+        p['div'] = self.joinwithoutempty(sel.xpath('//body//text()').extract())
         p.save()
+        with codecs.open('shabi.txt', 'a', 'utf-8') as f:
+            f.write(p['title'])
+            f.write(p['p'])
         yield p
