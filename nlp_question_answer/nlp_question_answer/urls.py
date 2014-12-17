@@ -7,8 +7,9 @@ urlpatterns = patterns('',
 ) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 
-from qa import views as web
+# from qa import views as web
 urlpatterns += patterns('',
-                        url(r'^$', web.index, name='web_index'),
-                        url(r'^cause/$', web.query_handler, name='web_query'),
+                        # url(r'^$', web.index, name='web_index'),
+                        url(r'^search/', include('haystack.urls')),
+                        # url(r'^cause/$', web.query_handler, name='web_query'),
                         )
