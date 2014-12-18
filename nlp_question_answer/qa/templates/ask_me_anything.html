@@ -14,16 +14,18 @@
         </div><!-- /.col-lg-6 -->
     </div><!-- /.row -->
 </form>
+{% if q %}
 <p><b>Question type: {{q.get_type}}</b></p>
-<p>{{ q.weight_keywords.keys }}<p>
 <ul>
     {% for i in result %}
     <li>
         <blockquote>{{i.object.content}}
-        <small> <a href="{{i.object.url}}">{{i.title}} [ID:{{ i.object.id }}]</a></small>
+        <small> <a target="_blank" href="{{i.object.url}}">{{i.title}} [ID:{{ i.object.id }}]</a></small>
         </blockquote>
     </li>
     {% endfor %}
 </ul>
-
+{% else %}
+<h2>Ask me anything, I might have an answer for you.</h2>
+{% endif %}
 {% endblock content %}
