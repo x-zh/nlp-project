@@ -38,4 +38,4 @@ def ne(document):
 with open('testQuestions.txt', 'r') as f:
     for l in f:
         if l.strip() and l.strip()[0].lower() == 'q':
-            ne(l.strip())
+            print l.strip()[2:]

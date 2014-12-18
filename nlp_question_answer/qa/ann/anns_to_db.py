@@ -6,14 +6,38 @@ Created on 12/17/14
 @author: 'johnqiao'
 """
 import os
-
+import sys
 import django
 
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+base_path = os.path.abspath(os.path.dirname(__file__))
+print base_path
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "nlp_question_answer.settings")
 django.setup()
 
 from qa.ann.ann import AnnotationUtil, Page
-from qa.models import Paragraph
+from qa.models import Paragraph, Pages
+
+
+def add_context():
+    Paragraph.objects.filter(content__icontains='JavaScript').delete()
+    # delete All rights reserved.
+    return
+    for p in Paragraph.objects.filter():
+        # page = Pages.objects.get(url=p.url)
+        if len(p.content) < 10:
+            try:
+                prev = Paragraph.objects.get(pk=p.pk-1)
+                nxt = Paragraph.objects.get(pk=p.pk+1)
+                prev.content += ' ' + p.content + ' ' + nxt.content
+                prev.save()
+                p.delete()
+                nxt.delete()
+            except Paragraph.DoesNotExist:
+                pass
+        # else:
+            # p.context = page.div
+            # p.save()
 
 
 def export_anns_to_db():
@@ -30,6 +54,11 @@ def export_anns_to_db():
     ]
     rule_files = ['rules/main.ar']
     ann_util = AnnotationUtil(log=False)
+    for i in range(len(lst_files)):
+        lst_files[i] = os.path.join(base_path, lst_files[i])
+    for i in range(len(rule_files)):
+        rule_files[i] = os.path.join(base_path, rule_files[i])
+
     ann_util.load_annotations(lst_files)
     ann_util.load_rules(rule_files)
 
@@ -48,4 +77,5 @@ def export_anns_to_db():
 
 
 if __name__ == '__main__':
+    add_context()
     export_anns_to_db()

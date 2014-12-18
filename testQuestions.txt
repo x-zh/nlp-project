@@ -1,22 +1,22 @@
-Q: How much did the undergraduate applications rise from 2002 to 2012?
+Q: How much did the undergraduate applications rise from 2002 to 2012? 1 1
 A: There was a 45% rise in undergraduate applications from 2002 to 2012 from 29,581 to 42,807
 
-Q: How much of the 2013 freshman class is of international origin?
+Q: How much of the 2013 freshman class is of international origin? 1 1
 A: The 2013 freshman class is 18% international from a record-breaking 87 countries.
 
-Q: How much of 2013 freshamn class are first-generation college students?
+Q: How much of 2013 freshamn class are first-generation college students? 1 1
 A: In 2013, 17% of the freshman class are first-generation college students.
 
-Q: What percentage of the tuition for freshman students in 2002 is covered by the financial aid awarded to them?
+Q: What percentage of the tuition for freshman students in 2002 is covered by the financial aid awarded to them? 1 
 A: In 2002, the average aid award for new freshmen was $8,960, which covered 34% of tuition. 
 
-Q: What is the function of the Wellness Exchange program?
+Q: What is the function of the Wellness Exchange program? 0
 A: Creation of the award-winning Wellness Exchange, which provides an innovative, 24/7 hotline to support student health and mental health needs
 
-Q: For how long can enrollment be deferred by freshman admitted students.
+Q: For how long can enrollment be deferred by freshman admitted students. 0
 A: Freshman applicants who have been offered admission to NYU may request to defer their enrollment for up to one year. 
 
-Q: Where should incoming freshman students send their final high school transcript?
+Q: Where should incoming freshman students send their final high school transcript? 2
 A: Please mail or have the following mailed to:
 
 Office of Undergraduate Admissions
@@ -26,64 +26,64 @@ New York, NY 10012-2339
 
 Final High School Transcript
 
-Q: How much financial aid does NYU give per year on average?
+Q: How much financial aid does NYU give per year on average? 9
 A: Each year, NYU awards more than $133 million in scholarships and grants. To qualify, you will need to apply!
 
-Q: How many New York City subway rides did New Yorkers take in 2011?
+Q: How many New York City subway rides did New Yorkers take in 2011? 0
 A: New Yorkers took 1.6 billion rides on New York City subways in 2011.
 
-Q: Who is the Chair of the Applied Physics department?
+Q: Who is the Chair of the Applied Physics department? 2
 A: Lorcan M. Folan
 Associate Professor and Department Chair
 Applied Physics
 folan@nyu.edu 
 (718) 260-3072
 
-Q: Is Edward Wolf a member of the Applied Physics department?
+Q: Is Edward Wolf a member of the Applied Physics department? 2
 A: Edward Wolf
 Professor
 Applied Physics
 ed.wolf@nyu.edu 
 (718) 260-3629
 
-Q: How many credits are required to get a Master of Science in Civil Engineering?
+Q: How many credits are required to get a Master of Science in Civil Engineering? 0
 A: To receive your Master of Science in Civil Engineering degree, you must choose to follow either the Single Area of Concentration or the General Program described below, and fulfill their requirements. Each requires a total of 30 credits. 
 
-Q. How much does your GPA have to be to earn a Master of Science in Transportation Engineering?
+Q. How much does your GPA have to be to earn a Master of Science in Transportation Engineering? 0
 A: To earn a Master of Science degree in Transportation Management from the School of Engineering, you must complete 30 credits, as outlined below. In addition to completing the required courses, you must have a 3.0 GPA or better in all graduate courses, in all courses required for your degree, and in all guided studies (readings, projects, theses).
 
-Q: What does computer science focus on?
+Q: What does computer science focus on? 0
 A: Computer science focuses on how to design, build, and effectively use the computers and systems that we interact with every day — from the iPhones in our hands to the complex databases in our banks and hospitals. 
 
-Q: What are the admission requirements for the Master's degree program in computer science in the Engineering school?
+Q: What are the admission requirements for the Master's degree program in computer science in the Engineering school? 1
 A: Admission to this program requires you to have an undergraduate degree in computer science, mathematics, science, or engineering, with a superior undergraduate record from an accredited institution. Applicants with degrees in other fields are considered individually for admission. Generally, entering students are expected to know mathematics through calculus.
 
-Q: How much percent of the nation's dentists are educated at NYU annually?
+Q: How much percent of the nation's dentists are educated at NYU annually? 1
 A: The NYU College of Dentistry is the third oldest and the largest dental school in the United States, educating nearly eight percent of our nation's dentists annually. 
 
 Q: What is President Barack Obama's wife's name?
 A: No answer (I assume).
 
-Q: How many faculty and researchers are employed at the College of Dentistry?
+Q: How many faculty and researchers are employed at the College of Dentistry? 0
 A: The College’s distinguished dental faculty includes more than 735 full- and part-time clinicians and researchers,
 
-Q: Who are the members of the Natural Language and Speech Processing group in the Computer Science department of NYU?
+Q: Who are the members of the Natural Language and Speech Processing group in the Computer Science department of NYU? [2,6,9,10]
 A: Natural Language and Speech Processing
 Faculty
 
 Ralph Grishman   Satoshi Sekine   Adam Meyers   Mehryar Mohri   Naomi Sager  
 
-Q. How many serial titles are there in the Elmer Bobst library?
+Q. How many serial titles are there in the Elmer Bobst library? 2
 A. The system flagship is the Elmer Holmes Bobst Library, which houses more than 4 million volumes, 235,000 serial titles, and over 40,000 linear feet of archives and provides access to thousands of electronic resources both on-site and to the global NYU community via the Internet.
 
-Q. What is the name of the library in the Polytechnic School of Engineering?
+Q. What is the name of the library in the Polytechnic School of Engineering? 1
 A. Bern Dibner Library (Polytechnic School of Engineering)
 
-Q. What is the address of Othmer Hall?
+Q. What is the address of Othmer Hall? N/A
 A. 101 Johnson Street
 Brooklyn, NY 11201
 
-Q. How do I get to Othmer Hall using the subway?
+Q. How do I get to Othmer Hall using the subway?  N/A
 A. Subway Access:
 1 block to Jay Street- Metro Tech Station for A, C, F, R* trains.
 1 block to Borough Hall Station for 2, 3, 4, 5 trains.

@@ -18,4 +18,5 @@ class Paragraph(models.Model):
     url = models.URLField()
     title = models.TextField()
     content = models.TextField()
+    context = models.TextField()
     annotations = models.TextField()

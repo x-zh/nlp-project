@@ -119,7 +119,9 @@ class AnnotationUtil:
             s_annotated = []
             for token in s.tokenized:
                 annotations = []
-                anns_of_token = self.anns.get(token)
+                if token[-1] in ('.', ',', '!', ':', ';', '?',):
+                    token = token[:-1]
+                anns_of_token = self.anns.get(token.replace(',', ''))
                 if anns_of_token:
                     annotations.extend(anns_of_token)
                 # Apply rules for annotation
