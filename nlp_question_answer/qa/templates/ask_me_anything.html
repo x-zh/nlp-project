@@ -13,7 +13,7 @@
 <ul>
     {% for i in result %}
     <li>
-        <h3><a href="{{i.object.url}}">{{i.title}}</a></h333>
+        <h3>{{ forloop.counter }}. <a href="{{i.object.url}}">{{i.title}} [ID:{{ i.object.id }}]</a></h3>
         <p>{{i.object.content}}</p>
     </li>
     {% endfor %}

@@ -1,0 +1,19 @@
+1	157	1	How much did the undergraduate applications rise from 2002 to 2012?
+2	162	1	How much of the 2013 freshman class is of international origin?
+3	165	1	How much of 2013 freshamn class are first-generation college students?
+4	167	2	What percentage of the tuition for freshman students in 2002 is covered by the financial aid awarded to them?
+5	183	-1	What is the function of the Wellness Exchange program?
+6	273	-1	For how long can enrollment be deferred by freshman admitted students.
+7	86	4	Where should incoming freshman students send their final high school transcript?
+8	392	4	How much financial aid does NYU give per year on average?
+9	1	6	How many New York City subway rides did New Yorkers take in 2011?
+10	621	3	Who is the Chair of the Applied Physics department?
+11	621	-1	Is Edward Wolf a member of the Applied Physics department?
+12	753	-1	How many credits are required to get a Master of Science in Civil Engineering?13	874	-1	How much does your GPA have to be to earn a Master of Science in Transportation Engineering?14	1078	-1	What does computer science focus on?
+15	1156	1	What are the admission requirements for the Master's degree program in computer science in the Engineering school?
+16	1498	1	How much percent of the nation's dentists are educated at NYU annually?
+17	-1	-1	What is President Barack Obama's wife's name?
+18	1511	-1	How many faculty and researchers are employed at the College of Dentistry?
+19	2965|2925|2967|2964|2949	2|4|7|9|10	Who are the members of the Natural Language and Speech Processing group in the Computer Science department of NYU?
+20	2999	1	How many serial titles are there in the Elmer Bobst library?
+21	3168	1	What is the name of the library in the Polytechnic School of Engineering?
