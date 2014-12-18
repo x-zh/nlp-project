@@ -97,3 +97,4 @@ htmlcov/
 nosetests.xml
 coverage.xml
 .ropeproject/
+whoosh_index/

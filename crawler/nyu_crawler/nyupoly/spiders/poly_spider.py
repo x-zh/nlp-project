@@ -1,5 +1,6 @@
 # coding=UTF-8
 import os
+import nltk
 from scrapy import Spider
 from scrapy.selector import Selector
 from scrapy.http import Request
@@ -38,14 +39,13 @@ class LinksListSpider(Spider):
         p['h4'] = self.joinwithoutempty(sel.xpath('//h4//text()').extract())
         p['h5'] = self.joinwithoutempty(sel.xpath('//h5//text()').extract())
         p['p'] = self.joinwithoutempty(sel.xpath('//p//text()').extract())
-        for pt in sel.xpath('//div//text()').extract():
-            if pt.strip() and len(pt.strip()) > 2:
-                pp = ParagraphItem()
-                pp['url'] = response.url
-                pp['content'] = pt
-                pp['title'] = p['title']
-                pp.save()
         p['div'] = self.joinwithoutempty(sel.xpath('//body//text()').extract())
+        for i in nltk.sent_tokenize(p['div']):
+            pp = ParagraphItem()
+            pp['title'] = p['title']
+            pp['url'] = p['url']
+            pp['content'] = i
+            pp.save()
         p.save()
         with codecs.open('shabi.txt', 'a', 'utf-8') as f:
             f.write(p['title'])

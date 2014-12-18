@@ -11,7 +11,7 @@
     {% for i in result %}
     <li>
         <h3><a href="{{i.object.url}}">{{i.title}}</a></h333>
-        <p>{{i.content}}</p>
+        <p>{{i.object.content}}</p>
     </li>
     {% endfor %}
 </ul>

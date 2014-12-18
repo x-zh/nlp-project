@@ -14,6 +14,7 @@ MAPPING = {
 WEIGHT_MAPPING = {
     'CD': 1.2,
     'NN': 1,
+    'JJ': 1,
     # 'NNS': 1.1,
     # 'IN': 0.1,
     # 'DT': 0.1,
