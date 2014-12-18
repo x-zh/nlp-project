@@ -11,9 +11,9 @@ import os
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "nlp_question_answer.settings")
 
-from qa import startup
+# from qa import startup
 
-startup.run()
+# startup.run()
 
 from django.core.wsgi import get_wsgi_application
 

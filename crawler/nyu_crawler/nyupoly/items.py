@@ -14,9 +14,12 @@ sys.path.append(os.path.join(_, 'nlp_question_answer'))
 os.environ['DJANGO_SETTINGS_MODULE'] = 'nlp_question_answer.settings'
 
 from scrapy.contrib.djangoitem import DjangoItem
-from qa.models import Pages
+from qa.models import Pages, Paragraph
 
 
 class PagesItem(DjangoItem):
     django_model = Pages
 
+
+class ParagraphItem(DjangoItem):
+    django_model = Paragraph

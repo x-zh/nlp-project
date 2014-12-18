@@ -1,0 +1,19 @@
+{% extends 'base.html'%}
+
+{% block content %}
+<form action="" method="POST">
+    {% csrf_token %}
+    <input name="q" style="width: 400px" />
+    <button>Ask</button>
+</form>
+{{ q.weight_keywords }}
+<ul>
+    {% for i in result %}
+    <li>
+        <h3><a href="{{i.object.url}}">{{i.title}}</a></h333>
+        <p>{{i.object.content}}</p>
+    </li>
+    {% endfor %}
+</ul>
+
+{% endblock content %}

@@ -1,9 +1,11 @@
 # coding=UTF-8
 import os
+import nltk
 from scrapy import Spider
 from scrapy.selector import Selector
 from scrapy.http import Request
-from nyupoly.items import PagesItem
+from nyupoly.items import PagesItem, ParagraphItem
+import codecs
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
@@ -37,6 +39,12 @@ class LinksListSpider(Spider):
         p['h4'] = self.joinwithoutempty(sel.xpath('//h4//text()').extract())
         p['h5'] = self.joinwithoutempty(sel.xpath('//h5//text()').extract())
         p['p'] = self.joinwithoutempty(sel.xpath('//p//text()').extract())
-        p['div'] = self.joinwithoutempty(sel.xpath('//div//text()').extract())
+        p['div'] = self.joinwithoutempty(sel.xpath('//body//text()').extract())
+        for i in nltk.sent_tokenize(p['div']):
+            pp = ParagraphItem()
+            pp['title'] = p['title']
+            pp['url'] = p['url']
+            pp['content'] = i
+            pp.save()
         p.save()
         yield p
