@@ -3,18 +3,25 @@
 {% block content %}
 <form action="" method="POST">
     {% csrf_token %}
-    <input name="q" style="width: 400px" />
-    <button>Ask</button>
+    <div class="row">
+        <div class="col-lg-122">
+            <div class="input-group">
+                <input value="{{ q.question }}" type="text" class="form-control" name="q">
+                <span class="input-group-btn">
+                    <button class="btn btn-default" type="submit">Ask!</button>
+                </span>
+            </div><!-- /input-group -->
+        </div><!-- /.col-lg-6 -->
+    </div><!-- /.row -->
 </form>
-<h1> {{ q.question }} </h1>
-<p>Question type: {{q.get_type}}</p>
-<p>Keyword Weight: {{ q.weight_keywords }}</p>
-
+<p><b>Question type: {{q.get_type}}</b></p>
+<p>{{ q.weight_keywords.keys }}<p>
 <ul>
     {% for i in result %}
     <li>
-        <h3>{{ forloop.counter }}. <a href="{{i.object.url}}">{{i.title}} [ID:{{ i.object.id }}]</a></h3>
-        <p>{{i.object.content}}</p>
+        <blockquote>{{i.object.content}}
+        <small> <a href="{{i.object.url}}">{{i.title}} [ID:{{ i.object.id }}]</a></small>
+        </blockquote>
     </li>
     {% endfor %}
 </ul>

@@ -14,10 +14,10 @@ def ask_me_anything(request):
         sq = SearchQuerySet()
         if q.get_type() in ('DATETIME', 'NUM', 'PERSON'):
             sq = sq.narrow('ann:' + q.get_type())
-        for k, v in q.weight_keywords().items():
-            if v != 1:
-                sq = sq.boost(k, v)
         for k in q.weight_keywords():
-            sq = sq.filter_or(SQ(content=k)|SQ(title=k)|SQ(context=k))
-        context = {'q': q, 'result': sq[:10]}
+            sq = sq.filter_or(SQ(content=k) | SQ(title=k) | SQ(context=k))
+        context = {
+            'q': q,
+            'result': sq[:10],
+        }
     return render(request, 'ask_me_anything.html', context)
