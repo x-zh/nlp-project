@@ -17,7 +17,8 @@ WORDNET = [
     ['doctor', 'phd', 'ph.d'],
     ['financial aid', 'scholarship'],
     ['dentistry', 'dental'],
-    ['earn', 'receive']
+    ['earn', 'receive'],
+    ['created', 'started',]
 ]
 
 IGNORE = [
