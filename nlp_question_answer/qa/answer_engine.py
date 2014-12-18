@@ -16,6 +16,7 @@ import math
 
 import nltk
 from nltk.corpus import wordnet
+import time
 
 import indexer
 
@@ -103,18 +104,22 @@ class AnswerEngine(object):
         """
         tagged = nltk.pos_tag(self.ir_query)
         ir_query_tagged = []
+        print 'tagged: ', tagged
         for word, pos in tagged:
+            # print 'pos before : ', pos
             pos = {
                 pos.startswith('N'): wordnet.NOUN,
                 pos.startswith('V'): wordnet.VERB,
                 pos.startswith('J'): wordnet.ADJ,
                 pos.startswith('R'): wordnet.ADV,
                 }.get(pos, None)
+            # print 'pos after     : ', pos
             if pos:
                 synsets = wordnet.synsets(word, pos=pos)
             else:
                 synsets = wordnet.synsets(word)
             ir_query_tagged.append((word, synsets))
+        print 'ir_query_tagged: ', ir_query_tagged
         # Add additional special hidden term
         ir_query_tagged.append(('cause', [wordnet.synset('cause.v.01')]))
         self.ir_query_tagged = ir_query_tagged
@@ -139,8 +144,11 @@ class AnswerEngine(object):
 
     def related_values(self, synsets, word2):
         """Get list of related value between synsets of two words."""
+        # TODO(sqiao): slow
+        # print 'synsets: ', synsets, 'word2: ', word2
         related = []
         for net1 in synsets:
+            # print 'wordnet.synsets(word2): ', wordnet.synsets(word2)
             for net2 in wordnet.synsets(word2):
                 try:
                     lch = net1.lch_similarity(net2)
@@ -155,16 +163,22 @@ class AnswerEngine(object):
         This method should be run only after _analyze_pages().
         """
         answers = []
+        # print 'self.pages length is:', len(self.pages), '\n'
         for page in self.pages:
             page_windows = []
+            start_time = time.time()
+            # print 'page.paragraphs length is:', len(page.paragraphs)
             for para in page.paragraphs:
+                # print 'para.sentence_tokens length is:', len(para.sentence_tokens)
                 for sentence in para.sentence_tokens:
                     # if len(page_windows) == 3:
                     #     break
                     page_windows.append(Answer(page, sentence,
                                         ' '.join(sentence), self))
+            print 'time: ', time.time() - start_time
             answers.extend(page_windows)
         answers = [x for x in answers if x.score > 0]
+        # TODO(sqiao): default is using the score below
         answers.sort(key=lambda answer: answer.score, reverse=True)
         # answers.sort(key=lambda answer: answer.page.cosine_sim, reverse=True)
         self.answers = answers
@@ -181,10 +195,15 @@ class AnswerEngine(object):
             from the internal list of (relevant) Pages. This list is also
             available by accessing the answers attribute of the instance.
         """
-        
+        start_time = time.time()
         self._analyze_query()
+        print '_analyze_query uses time:', time.time() - start_time
+        start_time = time.time()
         self._analyze_pages()
+        print '_analyze_pages uses time:', time.time() - start_time
+        start_time = time.time()
         self._extract_answers()
+        print '_extract_answers uses time:', time.time() - start_time
         return self.answers
 
 
@@ -219,12 +238,16 @@ class Answer(object):
             this answer is a correct answer for the query specified in
             the AnswerEngine object.
         """
+        print 'Ready to compute score...'
+        start_time = time.time()
         (
          term_count,
          related,
          causal_match,
          position,
         ) = self._compute_score(raw_tokens, ans_eng)
+        print 'compute score time: ', time.time() - start_time, 'raw_tokens length: ', len(raw_tokens)
+        print 'raw_tokens: ', raw_tokens, '\n'
         if term_count == 0:
             return 0
         position = math.sqrt(sum(position))
@@ -296,10 +319,14 @@ class Answer(object):
                 if term == 'cause':
                     causal_match = True
             if term_related:
+                # print 'term_related', term_related
                 term_related.sort(key=lambda tup: tup[0])
                 term_related, i = term_related[-1]  # maximum value
-                related.append(term_related)
-                position.append(i)
+                # print 'term_related:', term_related
+                # If term_related is not None
+                if term_related:
+                    related.append(term_related)
+                    position.append(i)
         return term_count, related, causal_match, position
 
 

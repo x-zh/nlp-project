@@ -1,0 +1,3 @@
+HMU,how much,MOY|PET|NUM-DATE,      ,# NUM-DATE means number without date
+WHO,who,PERSON,
+WHE,where|address,LOC,              ,# LOC means location
