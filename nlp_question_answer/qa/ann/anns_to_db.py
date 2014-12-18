@@ -19,24 +19,10 @@ from qa.models import Paragraph, Pages
 
 
 def add_context():
-    Paragraph.objects.filter(content__icontains='JavaScript').delete()
-    # delete All rights reserved.
-    return
     for p in Paragraph.objects.filter():
-        # page = Pages.objects.get(url=p.url)
-        if len(p.content) < 10:
-            try:
-                prev = Paragraph.objects.get(pk=p.pk-1)
-                nxt = Paragraph.objects.get(pk=p.pk+1)
-                prev.content += ' ' + p.content + ' ' + nxt.content
-                prev.save()
-                p.delete()
-                nxt.delete()
-            except Paragraph.DoesNotExist:
-                pass
-        # else:
-            # p.context = page.div
-            # p.save()
+        page = Pages.objects.get(url=p.url)
+        p.context = page.div
+        p.save()
 
 
 def export_anns_to_db():
@@ -77,5 +63,5 @@ def export_anns_to_db():
 
 
 if __name__ == '__main__':
-    add_context()
+    # add_context()
     export_anns_to_db()
