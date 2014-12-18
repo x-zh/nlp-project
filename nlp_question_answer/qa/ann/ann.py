@@ -21,11 +21,11 @@ class Page:
                 if anns:
                     _ann_list.extend(anns)
         self.ann_counter = Counter(_ann_list)
-        print self.ann_counter
+        # print self.ann_counter
 
     def print_sentences(self):
         for sentence in self.sentences:
-            print sentence.origin, '\n'
+            # print sentence.origin, '\n'
             # print sentence.tokenized, '\n'
             print sentence.annotated, '\n'
             print '\n\n\n'
