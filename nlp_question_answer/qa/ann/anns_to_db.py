@@ -11,7 +11,6 @@ import django
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 base_path = os.path.abspath(os.path.dirname(__file__))
-print base_path
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "nlp_question_answer.settings")
 django.setup()
 
@@ -62,18 +61,19 @@ def export_anns_to_db():
     ann_util.load_annotations(lst_files)
     ann_util.load_rules(rule_files)
 
-    paragraphs = Paragraph.objects.filter()
-    for p in paragraphs:
-        page = Page(ann_util.apply_annotation(p.content))
-        annotations = ''
-        for key, val in page.ann_counter.items():
-            annotations += str((key + ' ') * int(val))
-        p.annotations = annotations
-        p.save()
+    # paragraphs = Paragraph.objects.filter()
+    # for p in paragraphs:
+    #     page = Page(ann_util.apply_annotation(p.content))
+    #     annotations = ''
+    #     for key, val in page.ann_counter.items():
+    #         annotations += str((key + ' ') * int(val))
+    #     p.annotations = annotations
+    #     p.save()
 
-
-    # page = Page(ann_util.apply_annotation(txt))
-    # page.print_sentences()
+    txt = '%22 Office of Undergraduate Admissions New York University 665 Broadway, 11th Floor test@email.com New York, NY 10012-2339 $222,000,000 (172)823-1922'
+    page = Page(ann_util.apply_annotation(txt))
+    print txt, '\n'
+    page.print_sentences()
 
 
 if __name__ == '__main__':
