@@ -6,7 +6,10 @@
     <input name="q" style="width: 400px" />
     <button>Ask</button>
 </form>
-{{ q.weight_keywords }}
+<h1> {{ q.question }} </h1>
+<p>Question type: {{q.get_type}}</p>
+<p>Keyword Weight: {{ q.weight_keywords }}</p>
+
 <ul>
     {% for i in result %}
     <li>

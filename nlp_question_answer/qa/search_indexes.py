@@ -10,8 +10,8 @@ from .models import Pages, Paragraph
 #         return Pages
 
 class ParagraphIndex(indexes.SearchIndex, indexes.Indexable):
-    text = indexes.CharField(model_attr='content', document=True)
-    title = indexes.CharField(model_attr='title')
+    text = indexes.CharField(use_template=True, document=True)
+    title = indexes.CharField(model_attr='title', boost=0.7)
 
     def get_model(self):
         return Paragraph

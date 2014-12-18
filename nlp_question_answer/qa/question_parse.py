@@ -12,17 +12,20 @@ MAPPING = {
 }
 
 WEIGHT_MAPPING = {
-    'CD': 1.2,
+    'CD': 1,
     'NN': 1,
     'JJ': 1,
-    # 'NNS': 1.1,
+    'NNS': 1,
+    'VBD': 1,
     # 'IN': 0.1,
     # 'DT': 0.1,
     # 'WP': 0.1,
     # 'VBZ': 0.1,
-    # 'VBP': 0.1,
-    # 'NNP': 1.1,
+    'VBN': 1,
+    'VBP': 1,
+    'NNP': 1,
 }
+
 
 class Question():
 
@@ -72,13 +75,15 @@ class Question():
                 for i in sent:
                     if isinstance(i, nltk.tree.Tree):
                         for j in i.leaves():
-                            kw[j[0]] = 1.4
+                            kw[j[0]] = 1
                     else:
                         if i[1] in WEIGHT_MAPPING:
                             kw[i[0]] = WEIGHT_MAPPING.get(i[1], 1)
             self.kw = kw
+        if self.question_type == 'OBJECT':
+            self.kw['which'] = 1
         return self.kw
 
     def parse_question(self):
         self.parse_type()
-        parse_type
+        self.weight_keywords()

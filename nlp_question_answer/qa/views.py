@@ -1,6 +1,7 @@
 # coding = utf-8
 from django.shortcuts import render
 from haystack.query import SearchQuerySet
+from haystack.query import SQ
 
 from .question_parse import Question
 from .models import Pages
@@ -16,6 +17,6 @@ def ask_me_anything(request):
             if v != 1:
                 sq = sq.boost(k, v)
         for k in q.weight_keywords():
-            sq = sq.filter_or(content=k)
+            sq = sq.filter_or(SQ(content=k) | SQ(title=k))
         context = {'q': q, 'result': sq[:10]}
     return render(request, 'ask_me_anything.html', context)
