@@ -20,21 +20,15 @@ nltk.download() after you have the nltk library installed.
 
 * 'taggers/maxent_treebank_pos_tagger/english.pickle'
 
-### gensim
+#### Crawler
 
-Some useful Information Retrieval (IR) algorithms including string to
-vector functions and similarity queries such as TF-IDF. Also implements
-topic modelling such as Latent Semantic Analysis.
+[Scrapy](http://doc.scrapy.org/en/latest/intro/tutorial.html)
 
-* <http://radimrehurek.com/gensim/install.html>
+#### Search Engine
 
-* <https://github.com/piskvorky/gensim/>
+[Haystack - Search for Django](http://haystacksearch.org/)
 
-For successfully installing gensim, you need Fortran compiler. Run the following command to install it. (It might take you a while...) Also, you may need to update your brew first. (See 'Troubleshooting' section for how to update brew)
-
-`brew install gfortran`
-
-If the above command fails, try [Install freetype and scipy - Issue installing GCC using homebrew (scipy package dependency)](http://apple.stackexchange.com/questions/142308/issue-installing-gcc-using-homebrew-scipy-package-dependency) in the Troubleshooting section.
+[Whoosh - Fast, pure-Python full text indexing, search, and spell checking library.](https://pypi.python.org/pypi/Whoosh/)
 
 ### Django
 
@@ -42,17 +36,13 @@ Python web framework
 
 * <https://www.djangoproject.com/>
 
-### DB (PostgreSQL / MySQL / SQLite)
+### DB
 
-### Wiki Data
-
-* [simple english-wikipedia-6/10/10 (6/10/10)](https://archive.org/details/simplewiki_20100610)
+MySQL
 
 
 References
 ------------------
-
-* [causeofwhy](https://github.com/bwbaugh/causeofwhy)
 
 * [如何计算两个文档的相似度](http://www.52nlp.cn/%E5%A6%82%E4%BD%95%E8%AE%A1%E7%AE%97%E4%B8%A4%E4%B8%AA%E6%96%87%E6%A1%A3%E7%9A%84%E7%9B%B8%E4%BC%BC%E5%BA%A6%E4%B8%80)
 
