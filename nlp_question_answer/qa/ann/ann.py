@@ -134,8 +134,6 @@ class AnnotationUtil:
             s.annotated = s_annotated
             sentences_of_page.append(s)
 
-        print '\n\n'
-
         # Apply rules
         for rule_name, rule_patterns in self.rules.items():
             for rule_pattern in rule_patterns:
