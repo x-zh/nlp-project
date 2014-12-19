@@ -1,5 +1,12 @@
 PERSON
 
+Bach:gender=male:age=45
+Brahms:gender=male:age=67
+Carter:gender=male:age=23:height=7.5f
+Clinton:gender=male
+Gaugin:gender=male
+Gauguin:gender=male
+George Bush:gender=male
 Peiji
 Zhao
 Klaus-Dieter
@@ -18,13 +25,7 @@ Lyudmila
 Malikova
 Siyka
 Shopova
-Bach:gender=male:age=45
-Brahms:gender=male:age=67
-Carter:gender=male:age=23:height=7.5f
-Clinton:gender=male
-Gaugin:gender=male
-Gauguin:gender=male
-George Bush:gender=male
+
 Hillary Clinton:gender=female
 Hillary Rodham Clinton:gender=female
 John the Baptist:gender=male
