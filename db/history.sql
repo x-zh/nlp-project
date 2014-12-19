@@ -1,0 +1,30 @@
+select * from qa_paragraph where length(content) > 2000;
+select * from qa_paragraph where content like '%(document)%';
+select * from qa_paragraph where content like 'Skip to Content Skip to Search Skip to Navigation Skip to Sub Navigation New York University College of Dentistry Search NYUCD $(document).ready(function() {
+		getAlerts(\'/nyudental/en/admin/alerts.response.html\');
+	}); %';
+update qa_paragraph set content = replace(content, 'Skip to Content Skip to Search Skip to Navigation Skip to Sub Navigation New York University College of Dentistry Search NYUCD $(document).ready(function() {
+		getAlerts(\'/nyudental/en/admin/alerts.response.html\');
+	}); ', '') where content like 'Skip to Content Skip to Search Skip to Navigation Skip to Sub Navigation New York University College of Dentistry Search NYUCD $(document).ready(function() {
+		getAlerts(\'/nyudental/en/admin/alerts.response.html\');
+	}); %';
+select * from qa_paragraph where content like '%$(document).ready(function() {
+		getAlerts(\'/nyudental/en/admin/alerts.response.html\');
+	}); %';
+%;
+select * from qa_paragraph where content like '$(document).ready(function() {
+		getAlerts(\'/nyudental/en/admin/alerts.response.html\');
+	}); %';
+delete from qa_paragraph where content like '%(document)%' and content like '%Designed by%';
+delete where content like '%(document)%' and content like '%Designed by%';
+select distinct(content) from qa_paragraph where content like '%(document)%' and content like '%Designed by%';
+select * from qa_paragraph where content like '%(document)%' and content like '%Designed by%';
+select * from qa_paragraph where content like '%document%';
+select * from qa_paragraph where content like '%document%'';
+select * from qa_paragraph where length(content) > 1000;
+select * from qa_paragraph where content like '%(function(i,s,o,g,r,a,m){i[\'GoogleAnalyticsObject\'%';
+select * from qa_paragraph where content like '%UA-55461631-3%';
+select * from qa_paragraph where content like '%About Welcome from the Director How CUSP Came To Be Overview Resources Partners People Career Opportunities Supporting CUSP Urban Informatics Education Apply Now MS in Applied Urban Science and Informatics Overview Curriculum Projects CUSP Inaugural Class Admissions Requirements Financial Aid and Tuition Advanced Certificate in Applied Urban Science and Informatics Overview Curriculum Admissions Requirements Financial Aid and Tuition Executive Education Future Programs Request Information Upcoming Events Internships Admitted Students Research News + Events News Upcoming Events Press Releases CUSP In the Media Multimedia%';
+update qa_paragraph set content = replace(content, 'About Welcome from the Director How CUSP Came To Be Overview Resources Partners People Career Opportunities Supporting CUSP Urban Informatics Education Apply Now MS in Applied Urban Science and Informatics Overview Curriculum Projects CUSP Inaugural Class Admissions Requirements Financial Aid and Tuition Advanced Certificate in Applied Urban Science and Informatics Overview Curriculum Admissions Requirements Financial Aid and Tuition Executive Education Future Programs Request Information Upcoming Events Internships Admitted Students Research News + Events News Upcoming Events Press Releases CUSP In the Media Multimedia', ' ') where content like '%About Welcome from the Director How CUSP Came To Be Overview Resources Partners People Career Opportunities Supporting CUSP Urban Informatics Education Apply Now MS in Applied Urban Science and Informatics Overview Curriculum Projects CUSP Inaugural Class Admissions Requirements Financial Aid and Tuition Advanced Certificate in Applied Urban Science and Informatics Overview Curriculum Admissions Requirements Financial Aid and Tuition Executive Education Future Programs Request Information Upcoming Events Internships Admitted Students Research News + Events News Upcoming Events Press Releases CUSP In the Media Multimedia%';
+update qa_paragraph content = replace(content, 'About Welcome from the Director How CUSP Came To Be Overview Resources Partners People Career Opportunities Supporting CUSP Urban Informatics Education Apply Now MS in Applied Urban Science and Informatics Overview Curriculum Projects CUSP Inaugural Class Admissions Requirements Financial Aid and Tuition Advanced Certificate in Applied Urban Science and Informatics Overview Curriculum Admissions Requirements Financial Aid and Tuition Executive Education Future Programs Request Information Upcoming Events Internships Admitted Students Research News + Events News Upcoming Events Press Releases CUSP In the Media Multimedia', ' ') where content like '%About Welcome from the Director How CUSP Came To Be Overview Resources Partners People Career Opportunities Supporting CUSP Urban Informatics Education Apply Now MS in Applied Urban Science and Informatics Overview Curriculum Projects CUSP Inaugural Class Admissions Requirements Financial Aid and Tuition Advanced Certificate in Applied Urban Science and Informatics Overview Curriculum Admissions Requirements Financial Aid and Tuition Executive Education Future Programs Request Information Upcoming Events Internships Admitted Students Research News + Events News Upcoming Events Press Releases CUSP In the Media Multimedia%';
+select * from qa_paragraph where content like '%About Welcome from the Director How CUSP Came To Be Overview Resources Partners People Career Opportunities Supporting CUSP Urban Informatics Education Apply Now MS in Applied Urban Science and Informatics Overview Curriculum Projects CUSP Inaugural Class Admissions Requirements Financial Aid and Tuition Advanced Certificate in Applied Urban Science and Informatics Overview Curriculum Admissions Requirements Financial Aid and Tuition Executive Education Future Programs Request Information Upcoming Events Internships Admitted Students Research News + Events News Upcoming Events Press Releases CUSP In the Media Multimedia Contact Educational%'
