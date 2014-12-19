@@ -18,7 +18,11 @@ segmentation, word tokenization, and more.
 In addition, you will need to download several nltk resources using
 nltk.download() after you have the nltk library installed.
 
-* 'taggers/maxent_treebank_pos_tagger/english.pickle'
+* Corpora - words: Word Lists
+* Corpora - ieer: Nist IE-ER Data Sample
+* Models - maxent_ne_chunker: ACE Named Entity Chunker (Max entropy)
+* Models - maxent_treebank_pos_tagger: Treebank Part of Speech Tagger (Max entropy)
+* Models - punkt: Punkt Tokenizer Models
 
 #### Crawler
 
@@ -38,7 +42,7 @@ Python web framework
 
 ### DB
 
-MySQL
+MySQL, Sql dump(https://github.com/x-zh/nlp-project/tree/master/db)
 
 
 References
