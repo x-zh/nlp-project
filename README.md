@@ -1,7 +1,7 @@
 nlp-project
 ===========
 
-for NLP course
+Crawl NYU webpages, and using NLP, opensource search engine etc to answer questions about those docs. 
 
 Required Libraries
 ------------------
